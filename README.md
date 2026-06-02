@@ -33,4 +33,4 @@ This project uses fine-tuned transformer models for transliteration:
 - Custom fine-tuned checkpoint for Roman → Sindhi script mapping
 
 👉 Hugging Face Model Repository:  
-https://huggingface.co/roshanali0408/sindhi-transliterator
+https://huggingface.co/roshanali0408/Sindhi-Convert/tree/main/model
