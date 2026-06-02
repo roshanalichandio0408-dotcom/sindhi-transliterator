@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sindhi Transliterator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+html,body{height:100%}
+body{background:linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('letters-ancient-sindhi-language-alphabets-230161720.webp') no-repeat center center fixed; background-size:cover; color:#fff; display:flex; flex-direction:column; min-height:100vh;}
+header{background:repeating-linear-gradient(45deg,#1a0000,#1a0000 10px,#330000 10px,#330000 20px,#4d0000 20px,#4d0000 30px,#1a0000 30px,#1a0000 40px); color:#fff; padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center;}
+nav ul{display:flex; list-style:none}
+nav ul li{margin-left:12px}
+nav ul li a{color:#fff;text-decoration:none;font-weight:600;padding:0.45rem 0.9rem;border-radius:6px;cursor:pointer}
+nav ul li a:hover{background:#4b0000}
+section{max-width:1000px;margin:2rem auto;padding:1.8rem;background: rgba(255,255,255,0.85);border-radius:10px;display:none;color:#222}
+section.active{display:block}
+textarea{width:100%;padding:10px;border-radius:6px;border:1px solid #cfcfcf;min-height:160px;font-size:1rem;resize:vertical}
+.small-btn{padding:8px 12px;border:none;background:#800000;color:#fff;border-radius:6px;cursor:pointer}
+.small-btn:hover{background:#4b0000}
+#preview{margin-top:10px;padding:8px;background:rgba(128,0,0,0.08);border-radius:6px;min-height:40px;color:#222;font-size:1rem}
+.controls{margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:#222}
+.controls label{font-weight:600;margin-right:6px}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Sindhi Transliterator</h1>
+  <nav>
+    <ul>
+      <li><a onclick="showSection('home')">Home</a></li>
+      <li><a onclick="showSection('transliterator')">Transliterator</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+<section id="home" class="active">
+  <h2>Welcome to the Sindhi Transliterator</h2>
+  <p>Type Roman Sindhi and convert it to Perso-Arabic script using our backend model.</p>
+  <button onclick="showSection('transliterator')">Start Transliteration</button>
+</section>
+
+<section id="transliterator">
+  <h2>Roman → Perso-Arabic Sindhi</h2>
+
+  <textarea id="romanText" placeholder="Type Roman Sindhi"></textarea>
+
+  <div class="btn-row" style="margin-top:10px">
+    <button class="small-btn" onclick="convertSindhi()">Convert</button>
+    <button class="small-btn" onclick="clearText()">Clear</button>
+    <button class="small-btn" id="autoBtn" onclick="toggleAuto()">Auto: Off</button>
+  </div>
+
+  <textarea id="persoText" readonly dir="rtl" style="margin-top:10px"></textarea>
+
+  <div id="preview"><b>Preview:</b> <em>(Converted text appears here)</em></div>
+</section>
+
+</main>
+
+<script>
+function showSection(id){
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if(id==='transliterator') document.getElementById('romanText').focus();
+}
+
+/* ---------- Backend Integration ---------- */
+let autoConvert = false;
+
+async function convertSindhi() {
+  const roman = document.getElementById('romanText').value.trim();
+  if(!roman){ alert("Please type some text!"); return; }
+
+  try {
+    const res = await fetch("http://127.0.0.1:8000/convert", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ text: roman })
+    });
+    const data = await res.json();
+    document.getElementById('persoText').value = data.result;
+    document.getElementById('preview').innerHTML = "<b>Preview:</b> " + data.result;
+  } catch (err) {
+    alert("❌ Backend not running or connection failed!");
+  }
+}
+
+/* ---------- Auto Convert ---------- */
+function toggleAuto(){
+  autoConvert = !autoConvert;
+  document.getElementById('autoBtn').innerText = autoConvert ? "Auto: On" : "Auto: Off";
+  if(autoConvert) convertSindhi();
+}
+
+/* ---------- Clear Function ---------- */
+function clearText(){
+  document.getElementById('romanText').value = "";
+  document.getElementById('persoText').value = "";
+  document.getElementById('preview').innerHTML = "<b>Preview:</b> <em>(Converted text appears here)</em>";
+}
+
+/* ---------- Auto Convert on Input ---------- */
+document.getElementById('romanText').addEventListener('input', () => {
+  if(autoConvert) convertSindhi();
+});
+</script>
+
+</body>
+</html>
