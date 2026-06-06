@@ -733,7 +733,6 @@
     <h2>Roman Sindhi → Perso-Arabic Sindhi</h2>
     <p>Type or paste Roman Sindhi below and hit Convert</p>
   </div>
-
   <div class="card">
     <div class="section-label">Input</div>
     <textarea id="romanText" placeholder="Type Roman Sindhi here..."></textarea>
@@ -783,7 +782,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-const API = "http://127.0.0.1:8000";
+//const API = "http://127.0.0.1:8000";
 let historyCache = [];
 
 auth.onAuthStateChanged(user => {
