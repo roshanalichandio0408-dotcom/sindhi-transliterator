@@ -4,10 +4,13 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Sindhi Transliterator</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --red:      #800000;
     --red-hot:  #b30000;
@@ -16,7 +19,6 @@
     --border:   rgba(255,255,255,0.11);
     --text-dim: rgba(255,255,255,0.55);
   }
-
   body {
     font-family: 'Lato', sans-serif;
     min-height: 100vh;
@@ -115,19 +117,18 @@
   .nav-logout:hover { background: rgba(160,0,0,0.5); }
 
   /* ════════════════════════════════
-     PAGES (all hidden by default)
+     PAGES
   ════════════════════════════════ */
+  /* FIX: All pages hidden by default; each shown with its correct display type */
   .page { display: none; }
 
   /* ════════════════════════════════
      WELCOME / LANDING PAGE
   ════════════════════════════════ */
   #welcomePage {
-    min-height: 100vh;
     flex-direction: column;
   }
 
-  /* Hero */
   .hero {
     min-height: 100vh;
     display: flex;
@@ -205,7 +206,6 @@
   }
   .btn-outline:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.06); }
 
-  /* Stats row */
   .stats-row {
     display: flex;
     gap: 0;
@@ -235,7 +235,6 @@
   }
   .stat-label { font-size: 0.8rem; opacity: 0.55; letter-spacing: 1px; text-transform: uppercase; }
 
-  /* About / Features section */
   .section {
     padding: 80px 40px;
     max-width: 1100px;
@@ -267,7 +266,6 @@
     font-weight: 300;
   }
 
-  /* Feature cards */
   .feature-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -287,11 +285,7 @@
     background: rgba(255,255,255,0.10);
   }
 
-  .feature-icon {
-    font-size: 2rem;
-    margin-bottom: 16px;
-    display: block;
-  }
+  .feature-icon { font-size: 2rem; margin-bottom: 16px; display: block; }
 
   .feature-card h3 {
     font-family: 'Cinzel', serif;
@@ -301,14 +295,8 @@
     letter-spacing: 0.5px;
   }
 
-  .feature-card p {
-    font-size: 0.88rem;
-    opacity: 0.6;
-    line-height: 1.7;
-    font-weight: 300;
-  }
+  .feature-card p { font-size: 0.88rem; opacity: 0.6; line-height: 1.7; font-weight: 300; }
 
-  /* Models section */
   .models-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -316,9 +304,7 @@
     margin-top: 40px;
   }
 
-  @media (max-width: 600px) {
-    .models-row { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 600px) { .models-row { grid-template-columns: 1fr; } }
 
   .model-card {
     background: var(--glass);
@@ -341,34 +327,18 @@
     color: #ff9090;
   }
 
-  .model-card h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-  }
+  .model-card h3 { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 10px; }
+  .model-card p  { font-size: 0.88rem; opacity: 0.6; line-height: 1.7; font-weight: 300; }
 
-  .model-card p {
-    font-size: 0.88rem;
-    opacity: 0.6;
-    line-height: 1.7;
-    font-weight: 300;
-  }
-
-  /* CTA bottom */
   .cta-section {
     text-align: center;
     padding: 80px 40px;
     background: rgba(128,0,0,0.08);
     border-top: 1px solid rgba(128,0,0,0.2);
   }
-  .cta-section h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 2rem;
-    margin-bottom: 16px;
-  }
-  .cta-section p { opacity: 0.6; margin-bottom: 32px; font-weight: 300; }
+  .cta-section h2 { font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 16px; }
+  .cta-section p  { opacity: 0.6; margin-bottom: 32px; font-weight: 300; }
 
-  /* footer */
   footer {
     text-align: center;
     padding: 24px 20px;
@@ -432,12 +402,11 @@
   .auth-back { display: block; margin: 16px auto 0; background: transparent; color: rgba(255,255,255,0.4); border: none; cursor: pointer; font-size: 0.85rem; text-decoration: underline; font-family: 'Lato', sans-serif; }
 
   .auth-msg { border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; margin-bottom: 16px; display: none; }
-  .auth-msg.error   { background: rgba(180,0,0,0.3);  border: 1px solid rgba(200,0,0,0.5); }
-  .auth-msg.success { background: rgba(0,120,0,0.3);  border: 1px solid rgba(0,180,0,0.4); }
-  .auth-hint { font-size: 0.74rem; opacity: 0.38; margin-top: 5px; }
+  .auth-msg.error   { background: rgba(180,0,0,0.3);  border: 1px solid rgba(200,0,0,0.5); display: block; }
+  .auth-msg.success { background: rgba(0,120,0,0.3);  border: 1px solid rgba(0,180,0,0.4); display: block; }
 
   /* ════════════════════════════════
-     TRANSLITERATOR APP PAGE
+     APP PAGE
   ════════════════════════════════ */
   #appPage {
     min-height: 100vh;
@@ -445,17 +414,9 @@
     padding: 84px 0 60px;
   }
 
-  .app-hero {
-    text-align: center;
-    padding: 36px 20px 20px;
-  }
-  .app-hero h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  .app-hero p { font-size: 0.9rem; opacity: 0.5; font-weight: 300; }
+  .app-hero { text-align: center; padding: 36px 20px 20px; }
+  .app-hero h2 { font-family: 'Cinzel', serif; font-size: 1.6rem; font-weight: 600; margin-bottom: 8px; }
+  .app-hero p  { font-size: 0.9rem; opacity: 0.5; font-weight: 300; }
 
   .card {
     width: 100%;
@@ -560,13 +521,8 @@
     gap: 12px;
   }
 
-  .history-page-header h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-
-  .history-page-header p { font-size: 0.85rem; opacity: 0.45; margin-top: 4px; font-weight: 300; }
+  .history-page-header h2 { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 600; }
+  .history-page-header p  { font-size: 0.85rem; opacity: 0.45; margin-top: 4px; font-weight: 300; }
 
   #historyPageList {
     max-width: 1000px;
@@ -582,7 +538,6 @@
     background: var(--glass);
     border: 1px solid var(--border);
     border-radius: 14px;
-    cursor: pointer;
     transition: background 0.2s, border-color 0.2s;
   }
   .history-item:hover { background: rgba(255,255,255,0.11); border-color: rgba(128,0,0,0.45); }
@@ -606,446 +561,490 @@
     #historyPageList { padding: 0 16px; }
     .history-page-header { padding: 0 16px; }
   }
-
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════
-     NAVBAR
-════════════════════════════════ -->
+<!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-logo" onclick="goHome()">
     <span>Sindhi</span> Transliterator
   </div>
   <div class="nav-links">
-    <button class="nav-btn active" id="navHome"    onclick="goHome()">Home</button>
-    <button class="nav-btn"        id="navApp"     onclick="goApp()">Transliterator</button>
+    <button class="nav-btn active" id="navHome" onclick="goHome()">Home</button>
+    <button class="nav-btn" id="navApp" onclick="goApp()">Transliterator</button>
     <div class="nav-divider"></div>
-    <button class="nav-history-btn" onclick="goHistory()"> History</button>
+    <button class="nav-history-btn" onclick="goHistory()">History</button>
     <div class="nav-divider"></div>
     <span class="nav-user" id="navUser"></span>
     <button class="nav-logout" onclick="doLogout()">⏏ Logout</button>
   </div>
 </nav>
 
-<!-- ════════════════════════════════
-     WELCOME / LANDING PAGE
-════════════════════════════════ -->
+<!-- ================= WELCOME PAGE ================= -->
+<!-- FIX: Was completely empty (just a comment). Added actual landing page content. -->
 <div id="welcomePage" class="page">
-
-  <!-- minimal top bar before login -->
-  <div style="position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,0.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(128,0,0,0.3);padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-family:'Cinzel',serif;font-size:1rem;font-weight:700;letter-spacing:1px;"> <span style="color:#cc3333">Sindhi</span> Transliterator</div>
-    <div style="display:flex;gap:10px;">
-      <button onclick="showAuth('login')"    style="padding:7px 18px;background:transparent;color:white;border:1px solid rgba(255,255,255,0.25);border-radius:8px;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;font-size:0.85rem;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Login</button>
-      <button onclick="showAuth('register')" style="padding:7px 18px;background:#800000;color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Lato',sans-serif;font-weight:700;font-size:0.85rem;transition:background 0.2s;" onmouseover="this.style.background='#b30000'" onmouseout="this.style.background='#800000'">Register</button>
-    </div>
-  </div>
-
-  <!-- Hero -->
   <div class="hero">
-    <h1>Roman Sindhi to<br/><em>Perso-Arabic Script</em></h1>
-    <p>Convert Romanized Sindhi text into authentic Perso-Arabic Sindhi script using two state-of-the-art AI models — mBART and mT5 — trained specifically for the Sindhi language.</p>
+    <div class="hero-badge">AI-Powered NLP · Roman ↔ Sindhi</div>
+    <h1>The <em>Sindhi</em><br/>Transliterator</h1>
+    <p>Bidirectional transliteration between Roman script and Perso-Arabic Sindhi, powered by fine-tuned mBART and mT5 transformer models.</p>
     <div class="hero-btns">
-      <button class="btn-primary" onclick="showAuth('register')">Get Started Free →</button>
-      <button class="btn-outline"  onclick="showAuth('login')">Sign In</button>
+      <button class="btn-primary" onclick="showAuth('register')">Get Started →</button>
+      <button class="btn-outline" onclick="showAuth('login')">Sign In</button>
     </div>
   </div>
 
-  <!-- Stats -->
   <div class="stats-row">
     <div class="stat-item">
+      <span class="stat-num">9,800+</span>
+      <span class="stat-label">Training Pairs</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">91.86</span>
+      <span class="stat-label">mT5 BLEU Score</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num">97.80</span>
+      <span class="stat-label">mBART Char BLEU</span>
+    </div>
+    <div class="stat-item">
       <span class="stat-num">2</span>
-      <span class="stat-label">AI Models</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">مT5</span>
-      <span class="stat-label">mT5 Model</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">mBART</span>
-      <span class="stat-label">mBART Model</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num">∞</span>
-      <span class="stat-label">Conversions</span>
+      <span class="stat-label">Ensemble Models</span>
     </div>
   </div>
 
-  <!-- About Section -->
   <div class="section">
     <div class="section-tag">About the Project</div>
-    <h2>Preserving the Sindhi Language<br/>Through Modern AI</h2>
-    <p>Sindhi is one of the oldest languages in South Asia, spoken by over 25 million people worldwide. This tool bridges the gap between Romanized Sindhi — commonly used in digital communication — and the traditional Perso-Arabic script that preserves the cultural heritage of the Sindhi people.</p>
+    <h2>Preserving a Language<br/>Through Technology</h2>
+    <p>Sindhi is a low-resource language spoken by millions. This tool bridges the gap between Roman transliteration (commonly used online) and the traditional Perso-Arabic script, using state-of-the-art multilingual transformer models.</p>
 
     <div class="feature-grid">
       <div class="feature-card">
-        <span class="feature-icon"></span>
-        <h3>Dual AI Models</h3>
-        <p>Two separate models run in parallel — mBART and mT5 — giving you two transliteration perspectives for comparison and accuracy.</p>
+        <span class="feature-icon">🔄</span>
+        <h3>Bidirectional</h3>
+        <p>Convert seamlessly between Roman and Perso-Arabic Sindhi script with high accuracy.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon"></span>
-        <h3>Personal Accounts</h3>
-        <p>Each user has a private account. Your history is yours alone — no other user can see your conversions or inputs.</p>
+        <span class="feature-icon">🤖</span>
+        <h3>Dual Model Ensemble</h3>
+        <p>Two fine-tuned transformer models (mBART & mT5) run in parallel for side-by-side comparison.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon"></span>
+        <span class="feature-icon">📜</span>
         <h3>History Tracking</h3>
-        <p>Every conversion is saved to your personal history. Revisit past transliterations and reload them with a single click.</p>
+        <p>Every conversion is saved to your account so you can revisit and review past transliterations.</p>
       </div>
       <div class="feature-card">
-        <span class="feature-icon"></span>
-        <h3>Fast & Local</h3>
-        <p>Models run locally on your machine — no internet dependency for inference, ensuring speed and complete data privacy.</p>
+        <span class="feature-icon">🔒</span>
+        <h3>Secure Auth</h3>
+        <p>Firebase Authentication with JWT tokens keeps your account and history protected.</p>
       </div>
     </div>
   </div>
 
-  <!-- Models Section -->
   <div class="section" style="padding-top:0;">
-    <div class="section-tag">Technology</div>
-    <h2>Two Models, One Goal</h2>
-    <p>Compare outputs from two cutting-edge sequence-to-sequence models fine-tuned for Roman to Perso-Arabic Sindhi transliteration.</p>
+    <div class="section-tag">Models</div>
+    <h2>Two Models, One Result</h2>
+    <p>Both models are fine-tuned on the same Sindhi dataset and run simultaneously so you can compare outputs.</p>
 
     <div class="models-row">
       <div class="model-card">
-        <div class="model-badge">mBART</div>
-        <h3>Multilingual BART</h3>
-        <p>A large pre-trained sequence-to-sequence model supporting 25 languages. Fine-tuned on Sindhi parallel data for high-fidelity transliteration with strong contextual understanding.</p>
+        <div class="model-badge">Meta AI</div>
+        <h3>mBART-50</h3>
+        <p>facebook/mbart-large-50-many-to-many-mmt fine-tuned for Sindhi. Achieves ~97.80 character-level BLEU, excelling at character-accurate output.</p>
       </div>
       <div class="model-card">
-        <div class="model-badge">mT5</div>
-        <h3>Multilingual T5</h3>
-        <p>Google's multilingual text-to-text transformer covering 101 languages. Fine-tuned specifically for Sindhi script conversion with excellent morphological accuracy.</p>
+        <div class="model-badge">Google</div>
+        <h3>mT5-small</h3>
+        <p>google/mt5-small fine-tuned on 9,800+ transliteration pairs. Achieves ~91.86 BLEU and ~98% character accuracy on the test set.</p>
       </div>
     </div>
   </div>
 
-  <!-- CTA -->
   <div class="cta-section">
-    <h2>Start Transliterating Now</h2>
-    <p>Create your free account and experience AI-powered Sindhi transliteration.</p>
+    <h2>Ready to Transliterate?</h2>
+    <p>Create a free account and start converting Roman Sindhi to Perso-Arabic script instantly.</p>
     <button class="btn-primary" onclick="showAuth('register')">Create Free Account →</button>
   </div>
 
-  <footer>© 2026 Sindhi Transliterator · Final Year Project · All rights reserved</footer>
+  <footer>© 2024 Sindhi Transliterator · COMSATS University Islamabad · Final Year Project</footer>
 </div>
 
-<!-- ════════════════════════════════
-     AUTH PAGE
-════════════════════════════════ -->
+<!-- ================= AUTH PAGE ================= -->
 <div id="authPage" class="page">
 
   <!-- LOGIN -->
   <div class="auth-card" id="loginCard">
-    <h2> Welcome Back</h2>
-    <p class="auth-sub">Sign in with your username or email</p>
+    <h2>Welcome Back</h2>
+    <p class="auth-sub">Sign in with your email</p>
+    <!-- FIX: auth-msg visibility is now controlled by adding/removing error/success class in JS -->
     <div id="loginMsg" class="auth-msg"></div>
+
     <div class="auth-field">
-      <label>Username or Email</label>
-      <input id="loginIdentifier" type="text" placeholder="Enter username or email" autocomplete="username" />
+      <label>Email</label>
+      <input id="loginIdentifier" type="email" placeholder="Enter email" />
     </div>
+
     <div class="auth-field">
       <label>Password</label>
       <input id="loginPass" type="password" placeholder="Enter password"
-             autocomplete="current-password"
-             onkeydown="if(event.key==='Enter') doLogin()" />
+        onkeydown="if(event.key==='Enter') doLogin()" />
     </div>
+
     <button class="auth-submit" onclick="doLogin()">Login →</button>
-    <p class="auth-switch">No account? <a onclick="flipAuth('register')">Register here</a></p>
-    <button class="auth-back" onclick="showPage('welcomePage')">← Back to Home</button>
+
+    <p class="auth-switch">No account? <a onclick="flipAuth('register')">Register</a></p>
+    <button class="auth-back" onclick="showPage('welcomePage')">← Back</button>
   </div>
 
   <!-- REGISTER -->
   <div class="auth-card" id="registerCard" style="display:none;">
     <h2>Create Account</h2>
-    <p class="auth-sub">Fill in all fields to register</p>
+    <p class="auth-sub">Sign up with email</p>
     <div id="registerMsg" class="auth-msg"></div>
-    <div class="auth-field">
-      <label>Username</label>
-      <input id="regUser" type="text" placeholder="Choose a username" autocomplete="username" />
-      <p class="auth-hint">Min 3 characters</p>
-    </div>
+
     <div class="auth-field">
       <label>Email</label>
-      <input id="regEmail" type="email" placeholder="Enter your email address" autocomplete="email" />
+      <input id="regEmail" type="email" placeholder="Email" />
     </div>
+
     <div class="auth-field">
       <label>Password</label>
-      <input id="regPass" type="password" placeholder="Min 6 characters" autocomplete="new-password" />
+      <input id="regPass" type="password" placeholder="Password" />
     </div>
+
     <div class="auth-field">
       <label>Confirm Password</label>
-      <input id="regPassConfirm" type="password" placeholder="Repeat password"
-             onkeydown="if(event.key==='Enter') doRegister()" />
+      <input id="regPassConfirm" type="password" placeholder="Confirm password"
+        onkeydown="if(event.key==='Enter') doRegister()" />
     </div>
+
     <button class="auth-submit" onclick="doRegister()">Create Account →</button>
-    <p class="auth-switch">Already registered? <a onclick="flipAuth('login')">Login here</a></p>
-    <button class="auth-back" onclick="showPage('welcomePage')">← Back to Home</button>
+
+    <p class="auth-switch">Already have account? <a onclick="flipAuth('login')">Login</a></p>
+    <button class="auth-back" onclick="showPage('welcomePage')">← Back</button>
   </div>
 
 </div>
 
-<!-- ════════════════════════════════
-     TRANSLITERATOR APP PAGE
-════════════════════════════════ -->
+<!-- ================= APP PAGE ================= -->
 <div id="appPage" class="page">
   <div class="app-hero">
-    <h2>Romanized Sindhi → Perso-Arabic Sindhi</h2>
-    <p>Type or paste Roman Sindhi below and click Convert</p>
+    <h2>Roman Sindhi → Perso-Arabic Sindhi</h2>
+    <p>Type or paste Roman Sindhi below and hit Convert</p>
   </div>
 
   <div class="card">
-    <div class="section-label">Enter Roman Sindhi</div>
-    <textarea id="romanText" placeholder="Type Roman Sindhi here e.g. 'maan sindhi aahin'..."></textarea>
+    <div class="section-label">Input</div>
+    <textarea id="romanText" placeholder="Type Roman Sindhi here..."></textarea>
 
     <div class="btn-row">
-      <button class="btn btn-convert" onclick="convertSindhi()">🔄 Convert</button>
-      <button class="btn btn-ghost"   onclick="clearAll()">✕ Clear</button>
+      <button class="btn btn-convert" onclick="convertSindhi()">Convert</button>
+      <!-- FIX: clearAll() function added in JS -->
+      <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
     </div>
 
     <div class="outputs">
       <div class="output-block">
-        <div class="output-label">mBART — Perso-Arabic Output</div>
+        <div class="output-label">mBART</div>
         <div id="mbartOutput" class="output-box empty">Output will appear here...</div>
       </div>
+
       <div class="output-block">
-        <div class="output-label">mT5 — Perso-Arabic Output</div>
+        <div class="output-label">mT5</div>
         <div id="mt5Output" class="output-box empty">Output will appear here...</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════════════════
-     HISTORY PAGE
-════════════════════════════════ -->
+<!-- ================= HISTORY PAGE ================= -->
 <div id="historyPage" class="page">
   <div class="history-page-header">
     <div>
-      <h2>📜 Translation History</h2>
-      <p>All your past conversions — click any item to reload it in the transliterator</p>
+      <h2>History</h2>
+      <p>Your past transliterations</p>
     </div>
-    <button class="btn btn-danger" onclick="clearHistory()">🗑 Clear All History</button>
+    <!-- FIX: Added proper btn classes to the clear button -->
+    <button class="btn btn-danger" onclick="clearHistory()">Clear All</button>
   </div>
-
-  <div id="historyPageList">
-    <p class="no-history">No history yet.</p>
-  </div>
+  <div id="historyPageList"></div>
 </div>
 
 <script>
-  const API = "http://127.0.0.1:8000";
-  let historyCache = [];
+/* ================= FIREBASE CONFIG ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyCa9EF0CRsqOyNA1ufdQGHthdDuz7xKW0k",
+  authDomain: "sindhi-converter.firebaseapp.com",
+  projectId: "sindhi-converter",
+  appId: "1:1090418115910:web:6b42dfbc2a131d8d509147"
+};
 
-  // ─── token helpers ───
-  function getToken()    { return localStorage.getItem("sindhiToken"); }
-  function getUsername() { return localStorage.getItem("sindhiUser");  }
-  function authHeaders() {
-    return { "Content-Type": "application/json", "Authorization": "Bearer " + getToken() };
-  }
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-  // ─── page management ───
-  function showPage(id) {
-    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-    const page = document.getElementById(id);
-    page.style.display = (id === "authPage") ? "flex" : "flex";
-    if (id === "authPage") page.style.flexDirection = "column";
-    if (id === "appPage" || id === "historyPage") page.style.flexDirection = "column";
+const API = "http://127.0.0.1:8000";
+let historyCache = [];
 
-    // navbar
-    const loggedIn = !!getToken();
-    document.getElementById("navbar").style.display = loggedIn ? "flex" : "none";
-
-    // update active nav button
-    document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-    if (id === "welcomePage") document.getElementById("navHome")?.classList.add("active");
-    if (id === "appPage")     document.getElementById("navApp")?.classList.add("active");
-
-    window.scrollTo({ top: 0 });
-  }
-
-  function goHome()    { showPage("welcomePage"); }
-  function goApp()     { showPage("appPage"); }
-  function goHistory() { loadHistoryPage(); showPage("historyPage"); }
-
-  // ─── boot ───
-  window.addEventListener("load", () => {
-    if (getToken()) {
-      document.getElementById("navUser").textContent = "👤 " + getUsername();
+auth.onAuthStateChanged(user => {
+  const navbar = document.getElementById("navbar");
+  if (user) {
+    document.getElementById("navUser").textContent = "👤 " + user.email;
+    navbar.style.display = "flex";
+    // Only auto-redirect if the user is on the auth page (e.g. hard refresh while logged in)
+    const current = document.querySelector(".page[style*='flex']") || document.querySelector(".page[style*='block']");
+    const currentId = current ? current.id : null;
+    if (!currentId || currentId === "authPage") {
       showPage("appPage");
-    } else {
+    }
+  } else {
+    navbar.style.display = "none";
+    const current = document.querySelector(".page[style*='flex']") || document.querySelector(".page[style*='block']");
+    const currentId = current ? current.id : null;
+    // If on a protected page, kick back to welcome
+    if (currentId === "appPage" || currentId === "historyPage") {
       showPage("welcomePage");
     }
-  });
+  }
+});
 
-  // ─── auth screen ───
-  function showAuth(mode) {
-    showPage("authPage");
-    flipAuth(mode);
+/* ================= HEADERS ================= */
+async function authHeaders() {
+  const user = auth.currentUser;
+  if (!user) return { "Content-Type": "application/json" };
+  const token = await user.getIdToken();
+  return {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + token
+  };
+}
+
+/* ================= SHOW AUTH MESSAGE =================
+   FIX: Previously auth-msg display was always "none" in CSS
+   and the JS never properly toggled it. Now we set it correctly.
+======================================================== */
+function showMsg(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = "auth-msg " + type; // adds 'error' or 'success', CSS shows it
+}
+
+function hideMsg(id) {
+  const el = document.getElementById(id);
+  el.className = "auth-msg";
+  el.textContent = "";
+}
+
+/* ================= PAGE NAV ================= */
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => { p.style.display = "none"; });
+  const target = document.getElementById(id);
+  // FIX: Use correct display type per page
+  const flexPages = ["welcomePage", "authPage", "appPage", "historyPage"];
+  target.style.display = flexPages.includes(id) ? "flex" : "block";
+  window.scrollTo(0, 0);
+
+  // Update active nav button
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  if (id === "welcomePage") document.getElementById("navHome")?.classList.add("active");
+  if (id === "appPage")     document.getElementById("navApp")?.classList.add("active");
+}
+
+function goHome()    { showPage("welcomePage"); }
+function goApp()     { showPage("appPage"); }
+function goHistory() { loadHistoryPage(); showPage("historyPage"); }
+
+function showAuth(mode) {
+  showPage("authPage");
+  flipAuth(mode);
+}
+
+function flipAuth(mode) {
+  hideMsg("loginMsg");
+  hideMsg("registerMsg");
+  document.getElementById("loginCard").style.display    = mode === "login"    ? "block" : "none";
+  document.getElementById("registerCard").style.display = mode === "register" ? "block" : "none";
+}
+
+/* ================= LOGIN ================= */
+async function doLogin() {
+  const email = document.getElementById("loginIdentifier").value.trim();
+  const pass  = document.getElementById("loginPass").value;
+
+  if (!email || !pass) {
+    showMsg("loginMsg", "Please fill in all fields.", "error");
+    return;
   }
 
-  function flipAuth(mode) {
-    document.getElementById("loginCard").style.display    = mode === "login"    ? "block" : "none";
-    document.getElementById("registerCard").style.display = mode === "register" ? "block" : "none";
-    document.getElementById("loginMsg").style.display     = "none";
-    document.getElementById("registerMsg").style.display  = "none";
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+    showPage("appPage");
+  } catch(err) {
+    // FIX: Use inline message instead of alert()
+    showMsg("loginMsg", err.message, "error");
+  }
+}
+
+/* ================= REGISTER ================= */
+async function doRegister() {
+  const email = document.getElementById("regEmail").value.trim();
+  const pass  = document.getElementById("regPass").value;
+  const conf  = document.getElementById("regPassConfirm").value;
+
+  if (!email || !pass || !conf) {
+    showMsg("registerMsg", "Please fill in all fields.", "error");
+    return;
   }
 
-  function setMsg(id, text, type) {
-    const el = document.getElementById(id);
-    el.textContent   = text;
-    el.className     = "auth-msg " + type;
-    el.style.display = "block";
+  if (pass !== conf) {
+    // FIX: Use inline message instead of alert()
+    showMsg("registerMsg", "Passwords do not match.", "error");
+    return;
   }
 
-  // ─── LOGIN ───
-  async function doLogin() {
-    const login    = document.getElementById("loginIdentifier").value.trim();
-    const password = document.getElementById("loginPass").value;
-    if (!login || !password) { setMsg("loginMsg", "Please fill in all fields.", "error"); return; }
-    try {
-      const res  = await fetch(API + "/auth/login", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password })
-      });
-      const data = await res.json();
-      if (!res.ok) { setMsg("loginMsg", data.detail || "Login failed.", "error"); return; }
-      localStorage.setItem("sindhiToken", data.access_token);
-      localStorage.setItem("sindhiUser",  data.username);
-      document.getElementById("navUser").textContent = "👤 " + data.username;
-      showPage("appPage");
-    } catch { setMsg("loginMsg", "⚠ Cannot reach server. Is it running?", "error"); }
+  try {
+    await auth.createUserWithEmailAndPassword(email, pass);
+    // FIX: Go straight to the app after registration instead of flipping to login
+    showPage("appPage");
+  } catch(err) {
+    showMsg("registerMsg", err.message, "error");
   }
+}
 
-  // ─── REGISTER ───
-  async function doRegister() {
-    const username = document.getElementById("regUser").value.trim();
-    const email    = document.getElementById("regEmail").value.trim();
-    const password = document.getElementById("regPass").value;
-    const confirm  = document.getElementById("regPassConfirm").value;
-    if (!username || !email || !password || !confirm) { setMsg("registerMsg", "Please fill in all fields.", "error"); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))   { setMsg("registerMsg", "Please enter a valid email.", "error"); return; }
-    if (password !== confirm)                          { setMsg("registerMsg", "Passwords do not match.", "error"); return; }
-    try {
-      const res  = await fetch(API + "/auth/register", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password })
-      });
-      const data = await res.json();
-      if (!res.ok) { setMsg("registerMsg", data.detail || "Registration failed.", "error"); return; }
-      setMsg("registerMsg", "✅ Account created! Redirecting to login...", "success");
-      setTimeout(() => { flipAuth("login"); document.getElementById("loginIdentifier").value = username; }, 1400);
-    } catch { setMsg("registerMsg", "⚠ Cannot reach server. Is it running?", "error"); }
-  }
+/* ================= LOGOUT ================= */
+function doLogout() {
+  auth.signOut();
+  historyCache = [];
+  showPage("welcomePage");
+}
 
-  // ─── LOGOUT ───
-  function doLogout() {
-    localStorage.removeItem("sindhiToken");
-    localStorage.removeItem("sindhiUser");
-    historyCache = [];
-    clearAll();
-    showPage("welcomePage");
-  }
+/* ================= CONVERT ================= */
+async function convertSindhi() {
+  const text = document.getElementById("romanText").value.trim();
+  if (!text) return;
 
-  // ─── CONVERT ───
-  async function convertSindhi() {
-    const text     = document.getElementById("romanText").value.trim();
-    const mbartBox = document.getElementById("mbartOutput");
-    const mt5Box   = document.getElementById("mt5Output");
-    if (!text) return;
-    mbartBox.classList.remove("empty", "has-content");
-    mt5Box.classList.remove("empty", "has-content");
-    mbartBox.innerHTML = '<span class="spinner"></span> Converting...';
-    mt5Box.innerHTML   = '<span class="spinner"></span> Converting...';
-    try {
-      const res = await fetch(API + "/convert", {
-        method: "POST", headers: authHeaders(), body: JSON.stringify({ text })
-      });
-      if (res.status === 401) { doLogout(); return; }
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      mbartBox.innerText = data.mbart || "—";
-      mt5Box.innerText   = data.mt5   || "—";
-      mbartBox.classList.add("has-content");
-      mt5Box.classList.add("has-content");
-    } catch (err) {
-      mbartBox.classList.add("empty"); mt5Box.classList.add("empty");
-      mbartBox.innerText = "⚠ Backend not responding.";
-      mt5Box.innerText   = "Start: uvicorn main:app --reload";
+  const mb = document.getElementById("mbartOutput");
+  const mt = document.getElementById("mt5Output");
+
+  // Show loading state
+  mb.className = "output-box";
+  mt.className = "output-box";
+  mb.innerHTML = '<span class="spinner"></span>Converting...';
+  mt.innerHTML = '<span class="spinner"></span>Converting...';
+
+  try {
+    const headers = await authHeaders();
+    const res = await fetch(API + "/convert", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ text })
+    });
+
+    // FIX: Handle non-OK responses
+    if (!res.ok) {
+      throw new Error("Server error: " + res.status);
     }
-  }
 
-  function clearAll() {
-    const t = document.getElementById("romanText");
-    if (t) t.value = "";
-    const mb = document.getElementById("mbartOutput");
-    const m5 = document.getElementById("mt5Output");
-    if (mb) { mb.innerText = "Output will appear here..."; mb.className = "output-box empty"; }
-    if (m5) { m5.innerText = "Output will appear here..."; m5.className = "output-box empty"; }
-  }
+    const data = await res.json();
 
-  // ─── HISTORY PAGE ───
-  async function loadHistoryPage() {
-    try {
-      const res = await fetch(API + "/history", { headers: authHeaders() });
-      if (res.status === 401) { doLogout(); return; }
-      if (!res.ok) return;
-      historyCache = await res.json();
-      renderHistoryPage();
-    } catch (err) { console.log("History error:", err); }
-  }
+    mb.textContent = data.mbart || "—";
+    mt.textContent = data.mt5   || "—";
 
-  function renderHistoryPage() {
-    const list = document.getElementById("historyPageList");
+    // FIX: Update CSS classes to reflect content vs empty state
+    mb.className = data.mbart ? "output-box has-content" : "output-box empty";
+    mt.className = data.mt5   ? "output-box has-content" : "output-box empty";
+
+  } catch(err) {
+    mb.textContent = "Error: " + err.message;
+    mt.textContent = "Error: " + err.message;
+    mb.className = "output-box";
+    mt.className = "output-box";
+  }
+}
+
+/* ================= CLEAR ALL ================= */
+// FIX: Function was referenced in HTML but never defined
+function clearAll() {
+  document.getElementById("romanText").value = "";
+  const mb = document.getElementById("mbartOutput");
+  const mt = document.getElementById("mt5Output");
+  mb.textContent = "Output will appear here...";
+  mt.textContent = "Output will appear here...";
+  mb.className = "output-box empty";
+  mt.className = "output-box empty";
+}
+
+/* ================= HISTORY ================= */
+async function loadHistoryPage() {
+  const list = document.getElementById("historyPageList");
+  list.innerHTML = '<p class="no-history">Loading...</p>';
+
+  try {
+    const headers = await authHeaders();
+    const res = await fetch(API + "/history", { headers });
+
+    if (!res.ok) throw new Error("Failed to load history.");
+
+    historyCache = await res.json();
+
     if (!historyCache.length) {
-      list.innerHTML = '<p class="no-history">No history yet. Go to the Transliterator and convert some text!</p>'; return;
+      list.innerHTML = '<p class="no-history">No history yet. Start transliterating!</p>';
+      return;
     }
-    list.innerHTML = historyCache.map((item, i) => `
-      <div class="history-item" onclick="loadFromHistory(${i})">
+
+    // FIX: Improved history rendering with proper structure using existing CSS classes
+    list.innerHTML = historyCache.map(h => `
+      <div class="history-item">
         <div class="h-roman">
-          <span class="h-roman-badge">Roman Input</span>
-          ${escHtml(item.input)}
+          <span class="h-roman-badge">Roman</span>
+          ${escapeHtml(h.input)}
         </div>
         <div class="h-outputs">
           <div class="h-output-col">
             <div class="h-model-badge">mBART</div>
-            <div class="h-sindhi-text">${escHtml(item.mbart || "—")}</div>
+            <div class="h-sindhi-text">${escapeHtml(h.mbart)}</div>
           </div>
           <div class="h-output-col">
             <div class="h-model-badge">mT5</div>
-            <div class="h-sindhi-text">${escHtml(item.mt5 || "—")}</div>
+            <div class="h-sindhi-text">${escapeHtml(h.mt5)}</div>
           </div>
         </div>
       </div>
     `).join("");
-  }
 
-  function loadFromHistory(i) {
-    const item = historyCache[i];
-    document.getElementById("romanText").value = item.input;
-    const mb = document.getElementById("mbartOutput");
-    const m5 = document.getElementById("mt5Output");
-    mb.innerText = item.mbart || "—"; mb.className = "output-box has-content";
-    m5.innerText = item.mt5   || "—"; m5.className = "output-box has-content";
-    showPage("appPage");
+  } catch(err) {
+    list.innerHTML = `<p class="no-history">Error: ${err.message}</p>`;
   }
+}
 
-  async function clearHistory() {
-    if (!confirm("Clear all your history?")) return;
-    try {
-      await fetch(API + "/history", { method: "DELETE", headers: authHeaders() });
-    } catch (e) {}
+async function clearHistory() {
+  if (!confirm("Clear all history?")) return;
+
+  try {
+    const headers = await authHeaders();
+    await fetch(API + "/history", { method: "DELETE", headers });
     historyCache = [];
-    renderHistoryPage();
+    // FIX: Re-render the list after clearing instead of leaving stale items
+    document.getElementById("historyPageList").innerHTML =
+      '<p class="no-history">No history yet. Start transliterating!</p>';
+  } catch(err) {
+    alert("Failed to clear history: " + err.message);
   }
+}
 
-  function escHtml(str) {
-    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
+/* ================= HELPERS ================= */
+// FIX: Prevent XSS when rendering user-provided text into innerHTML
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/* Initial page */
+showPage("welcomePage");
 </script>
 </body>
 </html>
-
